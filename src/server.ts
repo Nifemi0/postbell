@@ -425,8 +425,12 @@ wss.on("connection", (ws) => {
   ws.send(JSON.stringify({ type: "connected", message: "NexusTrader MCP Live WebSocket Connected" }));
 });
 
-server.listen(PORT, () => {
-  console.log(`[NexusTrader] Server listening on http://localhost:${PORT}`);
-  console.log(`[NexusTrader] Web Terminal UI available at http://localhost:${PORT}`);
-  console.log(`[NexusTrader] MCP JSON-RPC Gateway at http://localhost:${PORT}/api/mcp/rpc`);
-});
+if (process.env.VERCEL !== "1") {
+  server.listen(PORT, () => {
+    console.log(`[NexusTrader] Server listening on http://localhost:${PORT}`);
+    console.log(`[NexusTrader] Web Terminal UI available at http://localhost:${PORT}`);
+    console.log(`[NexusTrader] MCP JSON-RPC Gateway at http://localhost:${PORT}/api/mcp/rpc`);
+  });
+}
+
+export { app };
