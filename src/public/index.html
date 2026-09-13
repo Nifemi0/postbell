@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexusTrader MCP // Autonomous AI Trading Terminal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Syne:wght@600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="matrix-background"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- HEADER TICKER -->
+  <header class="terminal-header">
+    <div class="brand-area">
+      <div class="brand-logo">
+        <span class="logo-glyph">⬡</span>
+        <div class="brand-text">
+          <span class="brand-title">NEXUSTRADER</span>
+          <span class="brand-subtitle">AI COPILOT // MCP v2024-11</span>
+        </div>
+      </div>
+      <div class="hackathon-badge">
+        <span class="badge-dot"></span> X-AGENT AI MCP HACKATHON 2026
+      </div>
+    </div>
+
+    <!-- Live Ticker Bar -->
+    <div class="ticker-ribbon" id="tickerRibbon">
+      <div class="ticker-loading">STREAMING LIVE CRYPTO FEEDS...</div>
+    </div>
+
+    <div class="header-actions">
+      <div class="ws-status" id="wsStatus">
+        <span class="status-indicator live"></span> WS: CONNECTED
+      </div>
+      <button class="btn-mcp-config" id="btnOpenMcpModal">
+        <span class="btn-icon">⚡</span> MCP CONFIG
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN HUD LAYOUT -->
+  <main class="terminal-container">
+    <!-- LEFT COLUMN: Chart + Indicators + Backtest -->
+    <section class="viewport-primary">
+      <!-- CONTROL BAR -->
+      <div class="panel-card market-control-bar">
+        <div class="pair-selector-group">
+          <label>ASSET:</label>
+          <div class="asset-chips" id="assetChips">
+            <button class="chip active" data-symbol="BTC/USDT">BTC/USDT</button>
+            <button class="chip" data-symbol="ETH/USDT">ETH/USDT</button>
+            <button class="chip" data-symbol="SOL/USDT">SOL/USDT</button>
+            <button class="chip" data-symbol="SUI/USDT">SUI/USDT</button>
+            <button class="chip" data-symbol="DOGE/USDT">DOGE/USDT</button>
+          </div>
+        </div>
+
+        <div class="timeframe-group">
+          <label>TF:</label>
+          <div class="tf-chips" id="tfChips">
+            <button class="tf-chip" data-tf="15m">15M</button>
+            <button class="tf-chip active" data-tf="1h">1H</button>
+            <button class="tf-chip" data-tf="4h">4H</button>
+            <button class="tf-chip" data-tf="1d">1D</button>
+          </div>
+        </div>
+
+        <div class="quick-signal-summary" id="quickSignalSummary">
+          <span class="sig-label">SIGNAL:</span>
+          <span class="sig-badge sig-buy" id="summarySignalBadge">SCANNING...</span>
+          <span class="conf-badge" id="summaryConfidence">--%</span>
+        </div>
+      </div>
+
+      <!-- CANDLESTICK CHART CANVAS -->
+      <div class="panel-card chart-panel">
+        <div class="chart-header">
+          <div class="chart-title">
+            <span class="chart-symbol" id="chartSymbol">BTC/USDT</span>
+            <span class="chart-price" id="chartPrice">\$--</span>
+            <span class="chart-change" id="chartChange">+0.00%</span>
+          </div>
+          <div class="chart-overlays">
+            <label><input type="checkbox" id="chkEma" checked> EMA (20/50)</label>
+            <label><input type="checkbox" id="chkSignals" checked> AI Markers</label>
+            <label><input type="checkbox" id="chkBollinger"> Bollinger Bands</label>
+          </div>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="candleChart"></canvas>
+          <div class="chart-crosshair-info" id="crosshairInfo"></div>
+        </div>
+      </div>
+
+      <!-- QUANTITATIVE BACKTESTER -->
+      <div class="panel-card backtest-panel">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="section-icon">🔬</span> QUANTITATIVE STRATEGY BACKTESTER (MCP ENGINE)
+          </div>
+          <div class="backtest-controls">
+            <select id="selStrategy" class="select-cyber">
+              <option value="EMA_RSI_REVERSAL">EMA Ribbon + RSI Reversal</option>
+              <option value="BREAKOUT_MOMENTUM">20-Bar Breakout Momentum</option>
+              <option value="MEAN_REVERSION_BB">Bollinger Mean Reversion</option>
+            </select>
+            <select id="selDays" class="select-cyber">
+              <option value="14">14 Days</option>
+              <option value="30" selected>30 Days</option>
+              <option value="60">60 Days</option>
+            </select>
+            <button class="btn-primary" id="btnRunBacktest">
+              <span>RUN AUDIT</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Backtest Metrics Dashboard -->
+        <div class="backtest-stats-grid" id="backtestStats">
+          <div class="stat-card">
+            <div class="stat-label">WIN RATE</div>
+            <div class="stat-value text-emerald" id="btWinRate">--%</div>
+            <div class="stat-sub" id="btWinRatio">-- W / -- L</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">NET PROFIT (30D)</div>
+            <div class="stat-value text-emerald" id="btNetProfit">+\$--</div>
+            <div class="stat-sub" id="btRoi">--% ROI</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">PROFIT FACTOR</div>
+            <div class="stat-value" id="btProfitFactor">--</div>
+            <div class="stat-sub">Gross Win / Gross Loss</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">MAX DRAWDOWN</div>
+            <div class="stat-value text-crimson" id="btMaxDd">--%</div>
+            <div class="stat-sub">Capital at Risk</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">SHARPE RATIO</div>
+            <div class="stat-value text-cyan" id="btSharpe">--</div>
+            <div class="stat-sub">Risk-Adjusted Alpha</div>
+          </div>
+        </div>
+
+        <!-- Equity Curve Chart -->
+        <div class="equity-canvas-wrapper">
+          <div class="equity-title">PORTFOLIO EQUITY CURVE OVER TIME</div>
+          <canvas id="equityChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: AI Copilot & Live MCP Tool Inspector -->
+    <aside class="viewport-secondary">
+      <!-- AI COPILOT TERMINAL -->
+      <div class="panel-card copilot-panel">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="pulse-indicator"></span> AI TRADING COPILOT
+          </div>
+          <span class="copilot-tag">AUTONOMOUS MCP AGENT</span>
+        </div>
+
+        <!-- Quick Action Prompt Chips -->
+        <div class="copilot-quick-prompts">
+          <button class="prompt-chip" data-prompt="Should I buy or sell right now? Give me entry and stop loss">🎯 Buy or Sell?</button>
+          <button class="prompt-chip" data-prompt="Compare BTC and ETH">⚖️ BTC vs ETH</button>
+          <button class="prompt-chip" data-prompt="Is there a funding squeeze risk?">⚡ Squeeze Check</button>
+          <button class="prompt-chip" data-prompt="What is RSI and is this coin oversold?">📈 RSI Check</button>
+          <button class="prompt-chip" data-prompt="Run a 30-day strategy backtest with EMA reversal">🔬 30D Backtest</button>
+        </div>
+
+        <!-- Copilot Chat Window -->
+        <div class="copilot-chat-history" id="copilotChat">
+          <div class="chat-msg msg-assistant">
+            <div class="msg-author">
+              <span class="agent-avatar">🤖</span> NEXUSTRADER COPILOT
+              <span class="msg-time">Ready</span>
+            </div>
+            <div class="msg-body">
+              Welcome to <strong>NexusTrader MCP</strong>! I am your autonomous trading agent connected to live crypto markets, multi-signal indicators, and quantitative backtesters via the <strong>Model Context Protocol</strong>.
+              <br><br>
+              Select an asset or prompt me below to analyze orderbooks, detect funding squeezes, or backtest strategies.
+            </div>
+          </div>
+        </div>
+
+        <!-- Copilot Input -->
+        <form class="copilot-input-area" id="copilotForm">
+          <input type="text" id="copilotInput" placeholder="Command agent (e.g. 'Run backtest and find entry for ETH')..." autocomplete="off" />
+          <button type="submit" class="btn-send" id="btnSendPrompt">
+            <span>TRANSMIT</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- LIVE MCP TOOL CALL INSPECTOR -->
+      <div class="panel-card mcp-inspector-panel">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="section-icon">📡</span> LIVE MCP TOOL CALL INSPECTOR
+          </div>
+          <button class="btn-tiny" id="btnClearMcpLogs">CLEAR</button>
+        </div>
+        <div class="inspector-subtext">
+          Streams real-time JSON-RPC 2.0 tool calls made by the AI agent to the MCP Server:
+        </div>
+        <div class="mcp-log-stream" id="mcpLogStream">
+          <div class="mcp-log-empty">Waiting for tool calls...</div>
+        </div>
+      </div>
+
+      <!-- DERIVATIVES & SQUEEZE TELEMETRY -->
+      <div class="panel-card derivatives-panel">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="section-icon">⚡</span> BITGET DERIVATIVES TELEMETRY
+          </div>
+        </div>
+        <div class="telemetry-grid" id="derivativesTelemetryGrid">
+          <div class="tel-item">
+            <span class="tel-label">FUNDING RATE (8H)</span>
+            <span class="tel-val" id="telFunding">--%</span>
+          </div>
+          <div class="tel-item">
+            <span class="tel-label">OPEN INTEREST</span>
+            <span class="tel-val" id="telOi">\$--M</span>
+          </div>
+          <div class="tel-item">
+            <span class="tel-label">LONG/SHORT RATIO</span>
+            <span class="tel-val" id="telLs">--</span>
+          </div>
+          <div class="tel-item">
+            <span class="tel-label">SQUEEZE STATUS</span>
+            <span class="tel-val status-pill" id="telSqueeze">BALANCED</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- MCP CONFIGURATION MODAL -->
+  <div class="modal-backdrop" id="mcpModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><span class="text-cyan">⚡</span> Model Context Protocol (MCP) Configuration</h3>
+        <button class="modal-close" id="btnCloseMcpModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Connect <strong>NexusTrader MCP</strong> directly into <strong>Claude Desktop</strong>, <strong>Cursor</strong>, or any MCP-compliant client.
+        </p>
+        
+        <div class="config-tabs">
+          <span class="tab active" data-tab="claude">Claude Desktop</span>
+          <span class="tab" data-tab="cursor">Cursor IDE</span>
+          <span class="tab" data-tab="http">HTTP Gateway</span>
+        </div>
+
+        <div class="code-box-container">
+          <pre><code id="mcpConfigCode"></code></pre>
+          <button class="btn-copy" id="btnCopyConfig">COPY CONFIG</button>
+        </div>
+
+        <div class="mcp-tools-list">
+          <h4>Available MCP Tools (6 Standard Tools):</h4>
+          <ul>
+            <li><code>get_market_telemetry</code> – Live pricing, volume, orderbooks & Bitget perp funding.</li>
+            <li><code>compute_technical_signals</code> – RSI(14), MACD, EMA ribbons, Bollinger Bands, and composite scores.</li>
+            <li><code>analyze_derivatives_bias</code> – Open interest surges, funding skew, and squeeze risk flags.</li>
+            <li><code>run_strategy_backtest</code> – 30-day algorithmic backtest simulations with equity curve and Sharpe.</li>
+            <li><code>calculate_risk_position</code> – Strict risk management and Kelly criterion position sizing.</li>
+            <li><code>simulate_order_execution</code> – Paper execution with realistic slippage and fee modeling.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "target": "/postbell.html",
+  "targetKind": "existing-ui",
+  "projectId": "26bf2841-b56d-44cc-9219-6cee9dcc6110",
+  "activeDraftId": "f10f3aaf-7190-4813-b414-15044eddb6be",
+  "designSystemPath": ".superdesign/design-system.md",
+  "contextFiles": [
+    ".superdesign/design-system.md",
+    "src/public/postbell.html",
+    "src/public/postbell.css",
+    "src/public/postbell.js"
+  ],
+  "fingerprints": {
+    ".superdesign/design-system.md": "0d31a68934ccc282ac530cf838b784f6aade15702331d04b2a566cfd1ca29613",
+    "src/public/postbell.html": "259192696cd2b8bff1afe69dd20b72300fa89443fb60b8ff1061b32f897a62d9",
+    "src/public/postbell.css": "f85a026f528cdd45585338611db3f04d95db597ecc95f93947f628064e7eac6b",
+    "src/public/postbell.js": "25318ab91c842adc90250a25d918ea7a4ad1543e9056fd908527283727daa46c"
+  },
+  "drafts": [
+    {
+      "draftId": "d97cdef2-49d0-4379-9b8f-fa660223719b",
+      "title": "Postbell — Swiss Signal Desk",
+      "currentVersion": 1,
+      "visualDirection": "High-contrast Swiss signal desk"
+    },
+    {
+      "draftId": "9c789dfc-3e7e-4c93-8619-94a676bbdb54",
+      "title": "Postbell — Overnight Briefing",
+      "currentVersion": 1,
+      "visualDirection": "Editorial overnight market briefing"
+    },
+    {
+      "draftId": "1d18bb00-ee0f-4d99-9d6f-bdf77b3ddaf5",
+      "title": "Postbell — Three Visual Directions",
+      "currentVersion": 1,
+      "visualDirection": "Comparative visual direction board"
+    },
+    {
+      "draftId": "e5a01ea1-bb53-4830-b8bd-a69f81de0adc",
+      "title": "Postbell — Fiscal × Quartr Direction",
+      "currentVersion": 1,
+      "visualDirection": "Fiscal research terminal structure with Quartr source-first polish"
+    },
+    {
+      "draftId": "5be4b014-ed9d-4406-8f9a-73ece7b1d5d0",
+      "title": "Postbell — Night Tape",
+      "currentVersion": 1,
+      "visualDirection": "Source-linked overnight event tape and research memo"
+    },
+    {
+      "draftId": "f10f3aaf-7190-4813-b414-15044eddb6be",
+      "title": "Postbell — Quartr Design Language",
+      "currentVersion": 3,
+      "visualDirection": "Quartr-inspired minimalist landing page with original Postbell product mockup"
+    }
+  ],
+  "updatedAt": "2026-09-12T11:56:00.000Z"
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Postbell Night Tape, a live sequence of after-hours market events.">
+  <title>Night Tape — Postbell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="postbell-app.css">
+  <link rel="stylesheet" href="postbell-product-theme.css">
+</head>
+<body>
+  <header class="app-header">
+    <a class="wordmark" href="postbell.html" aria-label="Postbell home"><span class="brand-orbit"></span>POSTBELL</a>
+    <nav class="app-nav" aria-label="Product navigation">
+      <a href="postbell-app.html">Morning Brief</a>
+      <a class="active" href="postbell-tape.html">Night Tape</a>
+      <a href="postbell-saved.html">Saved Research</a>
+      <a href="postbell-settings.html">Model Settings</a>
+    </nav>
+    <div class="live-state"><span></span>Monitoring</div>
+  </header>
+
+  <main class="workspace">
+    <header class="page-intro tape-hero">
+      <div><p class="overline">Live event sequence</p><h1>The overnight story,<br><span>minute by minute.</span></h1></div>
+      <p>A chronological view of price breaks, unusual volume, cross-asset confirmation, and primary-source evidence. Select a market to isolate its overnight story.</p>
+    </header>
+
+    <section class="tape-toolbar">
+      <div class="symbol-tabs" role="tablist" aria-label="Choose a market">
+        <button class="symbol-tab active" data-symbol="rNVDA" role="tab">rNVDA</button>
+        <button class="symbol-tab" data-symbol="rTSLA" role="tab">rTSLA</button>
+        <button class="symbol-tab" data-symbol="rQQQ" role="tab">rQQQ</button>
+      </div>
+      <span class="session-time" id="tape-updated">Synchronizing tape…</span>
+    </section>
+
+    <section class="tape-layout">
+      <article class="tape-feed">
+        <div class="tape-head"><span>Time</span><span>Signal type</span><span>Observed event</span></div>
+        <div id="tape-events"><div class="tape-event"><span class="event-time">—</span><span class="event-type">Loading</span><div class="event-copy"><h3>Reading the overnight tape</h3><p>Market events will appear here.</p></div></div></div>
+      </article>
+      <aside class="coverage-card">
+        <div class="coverage-orbit"><span></span></div>
+        <div><p class="panel-label">Coverage state</p><h2 id="coverage-title">Market monitor active</h2><p id="coverage-copy">Postbell is assembling the selected market's overnight sequence.</p></div>
+        <div class="coverage-metrics">
+          <div class="coverage-row"><span>Selected market</span><strong id="coverage-symbol">rNVDA</strong></div>
+          <div class="coverage-row"><span>Events found</span><strong id="coverage-events">—</strong></div>
+          <div class="coverage-row"><span>Data mode</span><strong id="coverage-mode">—</strong></div>
+        </div>
+        <p class="source-note">The tape separates observed market data from context that is still representative or pending.</p>
+      </aside>
+    </section>
+  </main>
+  <footer class="app-footer"><a href="postbell.html">Postbell home</a><span>Research and decision support · No automated trade execution</span></footer>
+  <script src="postbell-tape.js"></script>
+</body>
+</html>

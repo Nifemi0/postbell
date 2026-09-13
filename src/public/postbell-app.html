@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Postbell after-hours market intelligence workspace.">
+  <title>Morning Brief — Postbell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="postbell-app.css">
+  <link rel="stylesheet" href="postbell-product-theme.css">
+  <link rel="stylesheet" href="postbell-app-layout.css">
+  <link rel="stylesheet" href="postbell-agent.css">
+  <style>.quote span.down{color:var(--red)}</style>
+</head>
+<body>
+  <header class="app-header">
+    <a class="wordmark" href="postbell.html" aria-label="Postbell home"><span class="brand-orbit"></span>POSTBELL</a>
+    <nav class="app-nav" aria-label="Product navigation">
+      <a class="active" href="postbell-app.html">Morning Brief</a>
+      <a href="postbell-tape.html">Night Tape</a>
+      <a href="postbell-saved.html">Saved Research</a>
+      <a href="postbell-settings.html">Model Settings</a>
+    </nav>
+    <div class="live-state"><span></span>Bitget connected</div>
+  </header>
+
+  <section class="market-strip" aria-label="Overnight watchlist">
+    <div class="strip-title"><small>Overnight watch</small><span id="brief-stamp">Updating</span></div>
+    <div class="strip-assets">
+      <button class="asset-chip active" data-symbol="rNVDA"><span>rNVDA</span><small>Nvidia</small><b id="change-rNVDA">—</b></button>
+      <button class="asset-chip" data-symbol="rTSLA"><span>rTSLA</span><small>Tesla</small><b id="change-rTSLA">—</b></button>
+      <button class="asset-chip" data-symbol="rQQQ"><span>rQQQ</span><small>Nasdaq 100</small><b id="change-rQQQ">—</b></button>
+    </div>
+    <div class="strip-coverage">34 markets · <span id="data-mode">loading data</span></div>
+  </section>
+
+  <main class="workspace">
+    <section class="workspace-top morning-hero">
+      <div>
+        <p class="overline">Your Saturday briefing · New York session</p>
+        <h1>While New York slept,<br><span>rNVDA broke from the pack.</span></h1>
+      </div>
+      <div class="session-dial" aria-label="Overnight session status">
+        <div class="dial-ring"><span>LIVE</span></div>
+        <div class="watch-control"><small>Overnight agent</small><strong id="watch-status">Standing by</strong><p id="watch-copy">Start a watch and Postbell will keep scanning when this page is closed.</p><div><button type="button" id="watch-toggle">Start watch</button><button type="button" id="watch-scan">Scan now</button></div><span id="watch-meta">No scans yet</span></div>
+      </div>
+    </section>
+
+    <section class="command-bar" aria-label="Ask Postbell">
+      <div class="command-icon"><span></span></div>
+      <form id="research-form">
+        <label for="research-question">Ask Postbell</label>
+        <input id="research-question" value="What moved in the overnight rToken tape, and what should I watch at the open?" autocomplete="off">
+        <button type="submit" id="research-submit">Run research <span>↗</span></button>
+      </form>
+      <small>Evidence-backed answer</small>
+    </section>
+
+    <section class="signal-stage">
+      <article class="signal-canvas">
+        <header class="signal-head">
+          <div>
+            <span class="panel-label">Lead signal</span>
+            <h2 id="signal-name">NVIDIA tokenized stock</h2>
+          </div>
+          <div class="quote"><strong id="signal-price">$—</strong><span id="signal-change">—</span></div>
+        </header>
+
+        <div class="signal-grid">
+          <section class="chart-zone">
+            <div class="chart-top"><span>Overnight price path</span><small>20:00 — now · New York</small></div>
+            <div class="chart-visual">
+              <svg viewBox="0 0 760 260" preserveAspectRatio="none" aria-label="Overnight price movement">
+                <defs><linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9ffcf" stop-opacity=".22"/><stop offset="1" stop-color="#b9ffcf" stop-opacity="0"/></linearGradient></defs>
+                <g class="chart-grid"><path d="M0 40H760M0 110H760M0 180H760M0 250H760"/><path d="M150 0V260M380 0V260M610 0V260"/></g>
+                <path class="chart-area" d="M0 198 C80 203 110 169 165 175 S255 138 320 149 S414 110 478 124 S570 62 625 80 S704 43 760 46 L760 260H0Z"/>
+                <path class="chart-reference" d="M0 198 C180 194 420 188 760 172"/>
+                <path class="chart-market" id="chart-market" d="M0 198 C80 203 110 169 165 175 S255 138 320 149 S414 110 478 124 S570 62 625 80 S704 43 760 46"/>
+              </svg>
+              <div class="chart-glow"></div>
+            </div>
+            <div class="chart-bottom"><div><span class="line-key live"></span>rToken price</div><div><span class="line-key reference"></span>24h reference</div><small id="signal-source">Bitget ticker · waiting for response</small></div>
+          </section>
+
+          <aside class="signal-read">
+            <div class="read-status"><span>Postbell read</span><b id="confidence">— evidence</b></div>
+            <h3 id="thesis">The signal is forming.</h3>
+            <p id="thesis-copy">Run the research task to turn the move into a supported view.</p>
+            <div class="next-watch"><small>Watch at the open</small><strong id="watchpoint">Waiting for the first evidence pass.</strong></div>
+            <button id="save-brief" type="button">Save this research <span>＋</span></button>
+          </aside>
+        </div>
+      </article>
+    </section>
+
+    <section class="research-trace">
+      <header>
+        <div><span class="panel-label">Research trace</span><h2 id="question-readout">What moved in the overnight rToken tape, and what should I watch at the open?</h2></div>
+        <small>From signal to decision</small>
+      </header>
+      <div class="trace-flow">
+        <article><span class="trace-node">1</span><small>Detect</small><p id="task-detect">Reading the overnight move…</p></article>
+        <article><span class="trace-node">2</span><small>Connect</small><p id="task-connect">Connecting market and cross-asset evidence…</p></article>
+        <article><span class="trace-node">3</span><small>Decide</small><p id="task-decide">Preparing the watchpoint…</p></article>
+      </div>
+    </section>
+
+    <section class="evidence-zone">
+      <article class="evidence-panel">
+        <header><div><span class="panel-label">Evidence trail</span><h2>What supports the read</h2></div><span id="evidence-count">0 sources</span></header>
+        <div id="evidence-list" class="evidence-list"><p class="empty-evidence">Sources appear here after the research run.</p></div>
+      </article>
+      <aside class="limit-panel"><span>Known limitation</span><p id="uncertainty">Postbell will keep uncertainty visible before a trader acts.</p></aside>
+    </section>
+  </main>
+
+  <footer class="app-footer"><a href="postbell.html">Postbell home</a><span>Research and decision support · No automated trade execution</span></footer>
+  <script src="postbell-app.js"></script>
+</body>
+</html>

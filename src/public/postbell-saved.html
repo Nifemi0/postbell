@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Saved Postbell research briefs.">
+  <title>Saved Research — Postbell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="postbell-app.css">
+  <link rel="stylesheet" href="postbell-product-theme.css">
+</head>
+<body>
+  <header class="app-header">
+    <a class="wordmark" href="postbell.html" aria-label="Postbell home"><span class="brand-orbit"></span>POSTBELL</a>
+    <nav class="app-nav" aria-label="Product navigation">
+      <a href="postbell-app.html">Morning Brief</a>
+      <a href="postbell-tape.html">Night Tape</a>
+      <a class="active" href="postbell-saved.html">Saved Research</a>
+      <a href="postbell-settings.html">Model Settings</a>
+    </nav>
+    <div class="live-state"><span></span>Device library</div>
+  </header>
+
+  <main class="workspace">
+    <header class="page-intro saved-hero">
+      <div><p class="overline">Personal research library</p><h1>A working memory<br><span>for your market calls.</span></h1></div>
+      <p>Keep a short record of the questions, signals, and watchpoints that shaped your view. Saved research stays on this device.</p>
+    </header>
+    <section class="saved-toolbar"><span id="saved-count">0 saved briefs</span><a href="postbell-app.html">Run new research ↗</a></section>
+    <section id="saved-page-list" class="saved-page-list" aria-live="polite"></section>
+  </main>
+  <footer class="app-footer"><a href="postbell.html">Postbell home</a><span>Research and decision support · No automated trade execution</span></footer>
+  <script src="postbell-saved.js"></script>
+</body>
+</html>

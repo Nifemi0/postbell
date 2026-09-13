@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Connect a private language model to Postbell.">
+  <title>Model Settings — Postbell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="postbell-app.css">
+  <link rel="stylesheet" href="postbell-settings.css">
+</head>
+<body>
+  <header class="app-header">
+    <a class="wordmark" href="postbell.html" aria-label="Postbell home"><span class="brand-orbit"></span>POSTBELL</a>
+    <nav class="app-nav" aria-label="Product navigation">
+      <a href="postbell-app.html">Morning Brief</a>
+      <a href="postbell-tape.html">Night Tape</a>
+      <a href="postbell-saved.html">Saved Research</a>
+      <a class="active" href="postbell-settings.html">Model Settings</a>
+    </nav>
+    <div class="live-state"><span></span>Private connection</div>
+  </header>
+
+  <main class="workspace settings-workspace">
+    <header class="settings-intro">
+      <div><p class="overline">Your workspace</p><h1>Model Settings</h1></div>
+      <p>Choose the model that helps you make sense of the market.</p>
+    </header>
+
+    <section class="settings-layout">
+      <form id="model-form" class="model-form">
+        <header><h2>Connect your model</h2><p>Bring your provider key. We’ll check the connection before using it.</p></header>
+        <div class="field">
+          <label for="provider">Provider</label>
+          <select id="provider" name="provider">
+            <option value="Qwen">Alibaba Cloud Qwen</option>
+            <option value="DeepSeek">DeepSeek</option>
+            <option value="OpenRouter">OpenRouter</option>
+            <option value="OpenAI">OpenAI</option>
+            <option value="Ollama">Ollama on this computer</option>
+            <option value="Custom">Custom endpoint</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="model-name">Model</label>
+          <input id="model-name" name="model" value="qwen-plus" placeholder="Provider model identifier" required>
+        </div>
+        <div class="field">
+          <label for="api-key">API key</label>
+          <div class="secret-input"><input id="api-key" name="apiKey" type="password" placeholder="Paste your provider key" autocomplete="off" required><button type="button" id="reveal-key">Show</button></div>
+          <small>Your key is stored locally for this workspace, never shown in the browser, and never included in research output.</small>
+        </div>
+        <details id="advanced-settings"><summary>Advanced settings</summary><div class="field"><label for="base-url">Base URL</label><input id="base-url" name="baseUrl" type="url" value="https://dashscope-intl.aliyuncs.com/compatible-mode/v1" required><small>Change this for a different region or your own endpoint.</small></div></details>
+        <p class="form-message" id="model-message" role="status" hidden></p>
+        <div class="form-actions"><button type="submit" id="connect-model" class="primary-action">Connect and test</button><button type="button" id="disconnect-model" hidden>Disconnect</button></div>
+        <p class="billing-note">Testing sends a small request to your provider. Its usage charges may apply.</p>
+      </form>
+
+      <aside class="model-status">
+        <p class="panel-label"><span class="connection-dot"></span>Current connection</p>
+        <h2 id="engine-name">Built-in research</h2>
+        <p id="engine-copy">You can explore Postbell now. Connecting a model adds AI-written analysis to your market evidence.</p>
+        <dl>
+          <div><dt>Provider</dt><dd id="status-provider">Built in</dd></div>
+          <div><dt>Model</dt><dd id="status-model">Postbell rules</dd></div>
+          <div><dt>Credential</dt><dd id="status-key">Not required</dd></div>
+        </dl>
+        <a href="postbell-app.html">Open Morning Brief ↗</a>
+      </aside>
+    </section>
+
+    <section class="connection-notes" aria-label="About your connection">
+      <article><span>Evidence stays in control</span><p>The model receives the current Bitget observation and Postbell’s source trail. It is instructed to preserve uncertainty and avoid inventing catalysts.</p></article>
+      <article><span>Works with local models</span><p>Ollama and other OpenAI-compatible local servers can connect without an API key when they run on localhost.</p></article>
+      <article><span>One browser, one connection</span><p>A random connection ID isolates your credential from other browsers. Only that ID is stored locally.</p></article>
+    </section>
+  </main>
+  <footer class="app-footer"><a href="postbell.html">Postbell home</a><span>Your API key is never included in research output</span></footer>
+  <script src="postbell-settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+/* Give the written market read room to breathe beside the chart. */
+.signal-grid{grid-template-columns:minmax(0,1.35fr) minmax(360px,.85fr)}
+.signal-read{padding-left:32px;padding-right:26px}
+.signal-read h3{max-width:440px}
+@media(max-width:1180px){.signal-grid{grid-template-columns:minmax(0,1.2fr) minmax(330px,.8fr)}}
+@media(max-width:1050px){.signal-grid{grid-template-columns:1fr}.signal-read{padding-left:0;padding-right:0}}

@@ -1,0 +1,35 @@
+{
+  "name": "nexustrader-mcp",
+  "version": "1.0.0",
+  "description": "Autonomous Multi-Signal Crypto Trading Copilot & Model Context Protocol (MCP) Server for X-Agent AI MCP Hackathon 2026",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/server.ts",
+    "mcp": "ts-node src/mcp/server.ts",
+    "test": "ts-node src/tests/test_all.ts"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai-agent",
+    "crypto-trading",
+    "bitget",
+    "hackathon",
+    "olaxbt",
+    "x-agent"
+  ],
+  "author": "NexusTrader Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.4",
+    "@types/ws": "^8.5.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
