@@ -32,7 +32,7 @@ Postbell turns thin overnight markets into a sourced morning brief. It combines 
 - Mobile screenshot: `docs/submission/postbell-mobile.png` (confirm before upload)
 - Repository: https://github.com/Nifemi0/postbell
 - Public demo: https://nexustrader-mcp.vercel.app/
-- Demo video: `postbell-demo-premium.mp4` (58 seconds; final upload asset)
+- Demo video: https://github.com/Nifemi0/postbell/raw/refs/heads/master/postbell-demo-premium.mp4 (58 seconds)
 
 ## What the handbook requires for this track
 
@@ -44,6 +44,20 @@ Postbell turns thin overnight markets into a sourced morning brief. It combines 
 - A compliant X promotional post that includes `#BitgetHackathon`, mentions `@Bitget_AI`, and introduces Postbell: https://x.com/Love_Light_11/status/2099267855581589715
 
 The AI Trading Desk track is judged subjectively on feature depth, data/skill integration and effectiveness, research quality, natural-language interface fluency, and the strength of the personalized thesis. This means the demo story and evidence quality matter more for Postbell than pretending it is an autonomous trading agent.
+
+## Form-ready description notes
+
+**Thesis:** Postbell addresses the gap between 24/7 tokenized-stock movement and research workflows built for a market that closes overnight. It turns live Bitget rToken observations, peer context, event timelines, and source-status checks into a decision brief that keeps confirmed evidence separate from inference.
+
+**Target user and value:** The primary user is an active retail or small professional trader who holds or watches tokenized US tech exposures overnight, checks markets before the US open, and needs a fast evidence review without handing decisions to an autonomous bot. Postbell reduces the time spent stitching together ticker data, catalysts, and uncertainty across tabs.
+
+**Validation and metrics:** The current validation is an end-to-end working demo using live Bitget ticker and 1-hour candle endpoints for rNVDA, rTSLA, and rQQQ, with timestamped research output and a complete question-to-insight flow. Observed product proof is the runnable public demo and 58-second walkthrough. User-scale metrics are not yet claimed; the next validation step is measuring task completion time, repeat research sessions, and the percentage of briefs where users can identify the catalyst, evidence status, and invalidation condition.
+
+**Progress:** The public landing page, Morning Brief, Night Tape, Saved Research, and Settings flows are implemented. DeepSeek is connected through a local provider key; Bitget market data is read-only; fixture data is explicitly labeled when public endpoints are unavailable. The product does not execute trades.
+
+**Deliverables:** Public demo, GitHub repository, source code, README, submission checklist, screenshots, and the public walkthrough video are listed above.
+
+**Role of the LLM:** DeepSeek receives normalized market observations and evidence statuses, then writes the natural-language Detect → Connect → Decide brief. It does not invent ticker values, place orders, or silently replace missing evidence. The trader remains responsible for the final decision.
 
 ## Submission checklist
 
