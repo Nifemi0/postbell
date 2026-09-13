@@ -1,4 +1,4 @@
-$v = 'C:\Users\USER\.codex\codex-remote-attachments\01a09522-805e-7841-a143-aaed46248eb8\39718752-1902-47D9-B80C-3DB54BF4BF2D\1-2026-09-13__10_39_39_a_m_-Configure_Analysis_and_Access_Market_Intelligence_on_Postbell.mp4'
+$v = 'C:\Users\USER\.codex\codex-remote-attachments\01a09522-805e-7841-a143-aaed46248eb8\524959ED-F1E4-474D-A36D-D489F9414C0E\1-2026-09-13__10_39_39_a_m_-Configure_Analysis_and_Access_Market_Intelligence_on_Postbell-1-.mp4'
 $out = Join-Path $PSScriptRoot 'postbell-demo-premium.mp4'
 if (Test-Path $out) { Remove-Item $out -Force }
 $filter = "[0:v]crop=2152:1022:0:58,scale=1920:911,pad=1920:1080:0:84:color=#f1eee5,subtitles=tmp-video/captions.srt:force_style='FontName=Arial,FontSize=10,PrimaryColour=&H0030362F,OutlineColour=&H00F1EEE5,BorderStyle=1,Outline=2,Shadow=1,MarginV=30,Alignment=2'[v];[2:a]volume=0.025[a1];[3:a]volume=0.018[a2];[a1][a2]amix=inputs=2:duration=longest,afade=t=in:st=0:d=2,afade=t=out:st=54:d=4[music];[1:a]volume=1.0[voice];[voice][music]amix=inputs=2:duration=first:dropout_transition=2,loudnorm=I=-16:TP=-1.5:LRA=11[a]"
