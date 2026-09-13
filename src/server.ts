@@ -88,6 +88,7 @@ const publicDir = fs.existsSync(path.join(__dirname, "public"))
   : path.join(__dirname, "../src/public");
 
 app.use(express.json());
+app.get("/", (_req: Request, res: Response) => res.sendFile(path.join(publicDir, "postbell.html")));
 app.use(express.static(publicDir));
 
 // Broadcast helper for WebSockets
