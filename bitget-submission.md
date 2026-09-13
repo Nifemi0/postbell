@@ -30,9 +30,9 @@ Postbell turns thin overnight markets into a sourced morning brief. It combines 
 - Analysis endpoint: http://localhost:4040/api/postbell/analysis?symbol=rNVDA
 - Desktop screenshot: `docs/submission/postbell-desktop.png` (confirm before upload)
 - Mobile screenshot: `docs/submission/postbell-mobile.png` (confirm before upload)
-- Repository: **TODO — publish a public Git repository URL**
-- Public demo: **TODO — publish a reachable demo URL**
-- Demo video: **TODO — record only if the public demo requires login**
+- Repository: https://github.com/Nifemi0/postbell
+- Public demo: https://nexustrader-mcp.vercel.app/
+- Demo video: `postbell-demo-premium.mp4` (58 seconds; final upload asset)
 
 ## What the handbook requires for this track
 
@@ -83,7 +83,7 @@ The AI Trading Desk track is judged subjectively on feature depth, data/skill in
 
 ## What remains before submission
 
-The product build is locally testable. Submission readiness depends on completing the identity and distribution steps: Bitget registration/UID, a public repository, a public demo or reproducible run instructions, the public X post, and the final form fields.
+The product, public repository, public demo, and demo video are ready. The remaining submission actions are account and form items: record the Bitget UID, publish the qualifying X post, and paste the final links and team details into the official form.
 
 ## Simple demo recording plan (90 seconds)
 

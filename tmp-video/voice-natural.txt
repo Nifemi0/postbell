@@ -1,0 +1,13 @@
+Meet Postbell, overnight intelligence for tokenized stocks.
+
+When Wall Street closes, Postbell keeps watching the Bitget tape. It finds unusual moves, then connects them to live price data, cross asset context, and primary source evidence.
+
+Here is the morning brief. Ask a question in plain language, and Postbell turns the tape into a decision view you can actually read.
+
+The report separates what changed, what supports the read, and what remains uncertain. Every claim stays tied to its source. If evidence is missing, Postbell says so instead of inventing a catalyst.
+
+From the brief, move into the night tape, inspect the event sequence, and save the research for later.
+
+In settings, connect your own model. Your key stays local to this workspace.
+
+Postbell gives traders a clearer start to the day: live Bitget data, honest uncertainty, and a thesis you can review.
