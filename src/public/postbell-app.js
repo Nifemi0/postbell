@@ -1,6 +1,7 @@
 const brandMark = "assets/postbell/postbell-mark.svg";
 if (!document.querySelector('link[rel="icon"]')) { const icon = document.createElement("link"); icon.rel = "icon"; icon.type = "image/svg+xml"; icon.href = brandMark; document.head.appendChild(icon); }
 document.querySelectorAll(".brand-orbit").forEach((node) => { node.style.background = `url(${brandMark}) center / contain no-repeat`; node.style.border = "0"; });
+document.querySelectorAll(".app-wordmark").forEach((wordmark) => { if (!wordmark.querySelector("img")) { const img = document.createElement("img"); img.src = brandMark; img.alt = ""; img.width = 28; img.height = 28; img.style.cssText = "width:28px;height:28px;vertical-align:-8px;margin-right:9px"; wordmark.prepend(img); } });
 const state = { symbol: "rNVDA", brief: null, research: null, watch: null };
 const $ = (id) => document.getElementById(id);
 const formatPct = (value) => `${value >= 0 ? "+" : "−"}${Math.abs(Number(value)).toFixed(2)}%`;

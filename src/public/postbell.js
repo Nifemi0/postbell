@@ -1,6 +1,6 @@
 const brandMark = "assets/postbell/postbell-mark.svg";
 if (!document.querySelector('link[rel="icon"]')) { const icon = document.createElement("link"); icon.rel = "icon"; icon.type = "image/svg+xml"; icon.href = brandMark; document.head.appendChild(icon); }
-document.querySelectorAll(".wordmark").forEach((wordmark) => { if (!wordmark.querySelector("img")) { const img = document.createElement("img"); img.src = brandMark; img.alt = ""; img.width = 18; img.height = 18; img.style.cssText = "width:18px;height:18px;vertical-align:-4px;margin-right:8px"; wordmark.prepend(img); } });
+document.querySelectorAll(".wordmark, .app-wordmark").forEach((wordmark) => { if (!wordmark.querySelector("img")) { const img = document.createElement("img"); img.src = brandMark; img.alt = ""; img.width = 28; img.height = 28; img.style.cssText = "width:28px;height:28px;vertical-align:-8px;margin-right:9px"; wordmark.prepend(img); } });
 const tickerButtons = [...document.querySelectorAll(".ticker")];
 
 const revealSections = [...document.querySelectorAll(".content-section")];
