@@ -41,7 +41,7 @@ Postbell turns thin overnight markets into a sourced morning brief. It combines 
 - A project description that covers thesis, target user/value, validation data and metrics, progress, deliverables, and the project's view of AI trading.
 - A separate explanation of what the LLM actually does and which models were used.
 - A submission materials link containing the demo plus any code, screenshots, logs, or recording.
-- A compliant X promotional post that includes `#BitgetHackathon`, mentions `@Bitget_AI`, introduces Postbell, and retweets the official announcement.
+- A compliant X promotional post that includes `#BitgetHackathon`, mentions `@Bitget_AI`, and introduces Postbell: https://x.com/Love_Light_11/status/2099267855581589715
 
 The AI Trading Desk track is judged subjectively on feature depth, data/skill integration and effectiveness, research quality, natural-language interface fluency, and the strength of the personalized thesis. This means the demo story and evidence quality matter more for Postbell than pretending it is an autonomous trading agent.
 
@@ -62,7 +62,7 @@ The AI Trading Desk track is judged subjectively on feature depth, data/skill in
 - [ ] Attach the desktop and mobile screenshots in `docs/submission/`.
 - [ ] Capture a short demo video, maximum three minutes, covering the full research flow.
 - [ ] Include a usage record or API log with timestamps showing the brief and AI response running.
-- [ ] Publish a qualifying X post that tags `@Bitget_AI` and `#BitgetHackathon`; quote the official announcement if pursuing the community or participation award.
+- [x] Publish a qualifying X post that tags `@Bitget_AI` and `#BitgetHackathon`: https://x.com/Love_Light_11/status/2099267855581589715
 - [ ] Keep the local `data/` folder, API keys, `.env` files, and personal runtime state out of the public repository.
 
 ### Final form pass
@@ -83,7 +83,7 @@ The AI Trading Desk track is judged subjectively on feature depth, data/skill in
 
 ## What remains before submission
 
-The product, public repository, public demo, and demo video are ready. The remaining submission actions are account and form items: record the Bitget UID, publish the qualifying X post, and paste the final links and team details into the official form.
+The product, public repository, public demo, demo video, and qualifying X post are ready. The remaining submission actions are account and form items: record the Bitget UID and paste the final links and team details into the official form.
 
 ## Simple demo recording plan (90 seconds)
 
