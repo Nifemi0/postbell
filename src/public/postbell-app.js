@@ -3,6 +3,7 @@ if (!document.querySelector('link[rel="icon"]')) { const icon = document.createE
 document.querySelectorAll(".brand-orbit").forEach((node) => { node.style.background = `url(${brandMark}) center / contain no-repeat`; node.style.border = "0"; });
 document.querySelectorAll(".app-wordmark").forEach((wordmark) => { if (!wordmark.querySelector("img")) { const img = document.createElement("img"); img.src = brandMark; img.alt = ""; img.width = 28; img.height = 28; img.style.cssText = "width:28px;height:28px;vertical-align:-8px;margin-right:9px"; wordmark.prepend(img); } });
 const state = { symbol: "rNVDA", brief: null, research: null, watch: null };
+const watchKey = "postbell-watch-state";
 const $ = (id) => document.getElementById(id);
 const formatPct = (value) => `${value >= 0 ? "+" : "−"}${Math.abs(Number(value)).toFixed(2)}%`;
 const formatPrice = (value) => `$${Number(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -117,27 +118,24 @@ function renderWatch(watch) {
   const panel = document.querySelector(".session-dial");
   panel?.classList.toggle("agent-active", watch.active);
   setText("watch-status", watch.active ? "Watching the night" : "Standing by");
-  setText("watch-copy", watch.active ? `Scanning Bitget every ${watch.scanIntervalSeconds} seconds, even when this page is closed.` : "Start a watch and Postbell will keep scanning when this page is closed.");
+  setText("watch-copy", watch.active ? `Scanning Bitget every ${watch.scanIntervalSeconds} seconds while this page is open.` : "Start a private watch for this browser.");
   setText("watch-toggle", watch.active ? "Stop watch" : "Start watch");
   const lastScan = watch.lastScanAt ? new Date(watch.lastScanAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : null;
   setText("watch-meta", lastScan ? `${watch.scanCount} scan${watch.scanCount === 1 ? "" : "s"} · last ${lastScan} · lead ${watch.leadSymbol}` : "No scans yet");
 }
 
 async function refreshWatch() {
-  try {
-    const response = await fetch("/api/postbell/watch");
-    const payload = await response.json();
-    if (payload.success) renderWatch(payload.watch);
-  } catch {}
+  try { renderWatch(JSON.parse(localStorage.getItem(watchKey) || "null") || { active: false, startedAt: null, lastScanAt: null, scanCount: 0, scanIntervalSeconds: 30, leadSymbol: null, lastError: null, alerts: [] }); }
+  catch { localStorage.removeItem(watchKey); renderWatch({ active: false, startedAt: null, lastScanAt: null, scanCount: 0, scanIntervalSeconds: 30, leadSymbol: null, lastError: null, alerts: [] }); }
 }
 
 async function updateWatch(action) {
   const button = action === "scan" ? $("watch-scan") : $("watch-toggle");
   if (button) button.disabled = true;
   try {
-    const response = await fetch(`/api/postbell/watch/${action}`, { method: "POST" });
+    const response = await fetch(`/api/postbell/watch/${action}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ watch: state.watch }) });
     const payload = await response.json();
-    if (payload.success) { renderWatch(payload.watch); await loadBrief(); }
+    if (payload.success) { localStorage.setItem(watchKey, JSON.stringify(payload.watch)); renderWatch(payload.watch); await loadBrief(); }
   } finally {
     if (button) button.disabled = false;
   }
@@ -145,6 +143,6 @@ async function updateWatch(action) {
 
 $("watch-toggle")?.addEventListener("click", () => updateWatch(state.watch?.active ? "stop" : "start"));
 $("watch-scan")?.addEventListener("click", () => updateWatch("scan"));
-setInterval(refreshWatch, 10_000);
+setInterval(() => { if (state.watch?.active) updateWatch("scan"); }, 30_000);
 
 refreshWatch(); loadBrief(); runResearch($("research-question")?.value.trim());

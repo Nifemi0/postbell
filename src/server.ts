@@ -29,42 +29,42 @@ interface PostbellWatchAlert {
   dataMode: "representative" | "live";
 }
 
-const postbellWatch = {
-  active: false,
-  startedAt: null as string | null,
-  lastScanAt: null as string | null,
-  scanCount: 0,
-  scanIntervalSeconds: 30,
-  leadSymbol: null as string | null,
-  lastError: null as string | null,
-  alerts: [] as PostbellWatchAlert[]
-};
-const postbellWatchFile = path.join(process.cwd(), "data", "postbell-watch.json");
-
-try {
-  if (fs.existsSync(postbellWatchFile)) Object.assign(postbellWatch, JSON.parse(fs.readFileSync(postbellWatchFile, "utf8")));
-} catch {}
-
-function persistPostbellWatch() {
-  fs.mkdirSync(path.dirname(postbellWatchFile), { recursive: true });
-  fs.writeFileSync(postbellWatchFile, JSON.stringify(postbellWatch, null, 2));
+interface PostbellWatchState {
+  active: boolean;
+  startedAt: string | null;
+  lastScanAt: string | null;
+  scanCount: number;
+  scanIntervalSeconds: number;
+  leadSymbol: string | null;
+  lastError: string | null;
+  alerts: PostbellWatchAlert[];
 }
-let postbellScanRunning = false;
 
-async function runPostbellWatchScan() {
-  if (postbellScanRunning) return postbellWatch;
-  postbellScanRunning = true;
+function createPostbellWatchState(input: any = {}): PostbellWatchState {
+  return {
+    active: input.active === true,
+    startedAt: typeof input.startedAt === "string" ? input.startedAt : null,
+    lastScanAt: typeof input.lastScanAt === "string" ? input.lastScanAt : null,
+    scanCount: Math.max(0, Math.min(10_000, Number(input.scanCount) || 0)),
+    scanIntervalSeconds: 30,
+    leadSymbol: typeof input.leadSymbol === "string" ? input.leadSymbol.slice(0, 20) : null,
+    lastError: typeof input.lastError === "string" ? input.lastError.slice(0, 200) : null,
+    alerts: Array.isArray(input.alerts) ? input.alerts.slice(0, 20) : []
+  };
+}
+
+async function runPostbellWatchScan(watch: PostbellWatchState) {
   try {
     const brief = await getPostbellBrief();
     const lead = brief.signals.reduce((current, signal) =>
       Math.abs(signal.overnightChangePct) > Math.abs(current.overnightChangePct) ? signal : current
     );
     const observedAt = new Date().toISOString();
-    postbellWatch.lastScanAt = observedAt;
-    postbellWatch.scanCount += 1;
-    postbellWatch.leadSymbol = lead.symbol;
-    postbellWatch.lastError = null;
-    postbellWatch.alerts.unshift({
+    watch.lastScanAt = observedAt;
+    watch.scanCount += 1;
+    watch.leadSymbol = lead.symbol;
+    watch.lastError = null;
+    watch.alerts.unshift({
       id: `scan-${Date.now()}`,
       timestamp: observedAt,
       symbol: lead.symbol,
@@ -73,14 +73,11 @@ async function runPostbellWatchScan() {
       changePct: lead.overnightChangePct,
       dataMode: brief.dataMode
     });
-    postbellWatch.alerts = postbellWatch.alerts.slice(0, 20);
+    watch.alerts = watch.alerts.slice(0, 20);
   } catch (error: any) {
-    postbellWatch.lastError = error?.message || "Scan failed";
-  } finally {
-    postbellScanRunning = false;
+    watch.lastError = error?.message || "Scan failed";
   }
-  persistPostbellWatch();
-  return postbellWatch;
+  return watch;
 }
 
 const publicDir = fs.existsSync(path.join(__dirname, "public"))
@@ -277,25 +274,27 @@ app.delete("/api/postbell/llm", (_req: Request, res: Response) => {
 });
 
 app.get("/api/postbell/watch", (_req: Request, res: Response) => {
-  res.json({ success: true, watch: postbellWatch });
+  res.json({ success: true, watch: createPostbellWatchState() });
 });
 
-app.post("/api/postbell/watch/start", async (_req: Request, res: Response) => {
-  postbellWatch.active = true;
-  postbellWatch.startedAt = postbellWatch.startedAt || new Date().toISOString();
-  const watch = await runPostbellWatchScan();
+app.post("/api/postbell/watch/start", async (req: Request, res: Response) => {
+  const watch = createPostbellWatchState(req.body?.watch);
+  watch.active = true;
+  watch.startedAt = watch.startedAt || new Date().toISOString();
+  await runPostbellWatchScan(watch);
   res.json({ success: true, watch });
 });
 
-app.post("/api/postbell/watch/scan", async (_req: Request, res: Response) => {
-  const watch = await runPostbellWatchScan();
+app.post("/api/postbell/watch/scan", async (req: Request, res: Response) => {
+  const watch = createPostbellWatchState(req.body?.watch);
+  await runPostbellWatchScan(watch);
   res.json({ success: true, watch });
 });
 
-app.post("/api/postbell/watch/stop", (_req: Request, res: Response) => {
-  postbellWatch.active = false;
-  persistPostbellWatch();
-  res.json({ success: true, watch: postbellWatch });
+app.post("/api/postbell/watch/stop", (req: Request, res: Response) => {
+  const watch = createPostbellWatchState(req.body?.watch);
+  watch.active = false;
+  res.json({ success: true, watch });
 });
 
 // Backtest
@@ -400,11 +399,6 @@ app.post("/api/copilot", async (req: Request, res: Response) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-
-// Autonomous Postbell watch keeps scanning even when the browser is closed.
-setInterval(() => {
-  if (postbellWatch.active) void runPostbellWatchScan();
-}, 30_000);
 
 // Periodic WebSocket price updates broadcast every 3 seconds
 setInterval(async () => {
