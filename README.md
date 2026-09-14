@@ -6,7 +6,7 @@ It is designed for the first few minutes of a trading day: what moved, what may 
 
 ## Links
 
-- **Live demo:** https://nexustrader-mcp.vercel.app/
+- **Live demo:** https://postbelll.vercel.app/
 - **Demo video:** https://youtu.be/_BAzTV5-uMc
 - **Repository:** https://github.com/Nifemi0/postbell
 - **Hackathon post:** https://x.com/Love_Light_11/status/2099267855581589715
@@ -74,4 +74,5 @@ Postbell is submitted under **AI Trading Desk → Information Extraction & Signa
 ## License
 
 MIT
+
 

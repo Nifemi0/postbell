@@ -31,7 +31,7 @@ Postbell turns thin overnight markets into a sourced morning brief. It combines 
 - Desktop screenshot: `docs/submission/postbell-desktop.png` (confirm before upload)
 - Mobile screenshot: `docs/submission/postbell-mobile.png` (confirm before upload)
 - Repository: https://github.com/Nifemi0/postbell
-- Public demo: https://nexustrader-mcp.vercel.app/
+- Public demo: https://postbelll.vercel.app/
 - Demo video: https://github.com/Nifemi0/postbell/raw/refs/heads/master/postbell-demo-premium.mp4 (58 seconds)
 
 ## What the handbook requires for this track
@@ -109,3 +109,4 @@ The product, public repository, public demo, demo video, and qualifying X post a
 6. End on the sentence: “Postbell keeps the catalyst separate from the market signal, so the trader knows what is confirmed and what still needs proof.”
 
 Record this in one take with the browser at a readable zoom. No intro animation, voice-over editing, or music is required.
+
