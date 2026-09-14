@@ -223,7 +223,10 @@ async function fetchBitgetChart(symbol: string): Promise<number[] | null> {
   }
 }
 
-export async function getPostbellBrief(): Promise<PostbellBrief> {
+let briefCache: { expiresAt: number; value: PostbellBrief } | undefined;
+let briefInFlight: Promise<PostbellBrief> | undefined;
+
+async function buildPostbellBrief(): Promise<PostbellBrief> {
   const now = new Date();
   const [liveQuotes, liveCharts] = await Promise.all([
     Promise.all(signalFixtures.map((signal) => fetchBitgetQuote(signal.symbol))),
@@ -258,6 +261,20 @@ export async function getPostbellBrief(): Promise<PostbellBrief> {
       return enriched;
     })
   };
+}
+
+export async function getPostbellBrief(): Promise<PostbellBrief> {
+  const now = Date.now();
+  if (briefCache && briefCache.expiresAt > now) return briefCache.value;
+  if (briefInFlight) return briefInFlight;
+  briefInFlight = buildPostbellBrief();
+  try {
+    const value = await briefInFlight;
+    briefCache = { expiresAt: Date.now() + 8_000, value };
+    return value;
+  } finally {
+    briefInFlight = undefined;
+  }
 }
 
 export async function getPostbellSignal(symbol = "rNVDA"): Promise<PostbellSignal> {
@@ -336,7 +353,10 @@ const secCompanyMap: Record<string, { cik: string; name: string }> = {
   rTSLA: { cik: "0001318605", name: "Tesla" }
 };
 
-async function fetchPrimarySource(symbol: string): Promise<PostbellResearchResult["evidence"][number] | null> {
+const primarySourceCache = new Map<string, { expiresAt: number; value: PostbellResearchResult["evidence"][number] | null }>();
+const primarySourceInFlight = new Map<string, Promise<PostbellResearchResult["evidence"][number] | null>>();
+
+async function fetchPrimarySourceUncached(symbol: string): Promise<PostbellResearchResult["evidence"][number] | null> {
   const company = secCompanyMap[symbol.toUpperCase()];
   if (!company) return null;
   const controller = new AbortController();
@@ -367,6 +387,23 @@ async function fetchPrimarySource(symbol: string): Promise<PostbellResearchResul
     return null;
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+async function fetchPrimarySource(symbol: string): Promise<PostbellResearchResult["evidence"][number] | null> {
+  const key = symbol.toUpperCase();
+  const cached = primarySourceCache.get(key);
+  if (cached && cached.expiresAt > Date.now()) return cached.value;
+  const existing = primarySourceInFlight.get(key);
+  if (existing) return existing;
+  const request = fetchPrimarySourceUncached(symbol);
+  primarySourceInFlight.set(key, request);
+  try {
+    const value = await request;
+    primarySourceCache.set(key, { expiresAt: Date.now() + 300_000, value });
+    return value;
+  } finally {
+    primarySourceInFlight.delete(key);
   }
 }
 
