@@ -157,12 +157,14 @@ async function runAllTests() {
     }
     assert(rejected, "Remote providers require an API key");
 
+    let researchRequestBody: any;
     const mockProvider = http.createServer((request, response) => {
       let raw = "";
       request.on("data", (chunk) => { raw += chunk; });
       request.on("end", () => {
         const body = JSON.parse(raw || "{}");
         const isConnectionTest = body.messages?.length === 1;
+        if (!isConnectionTest) researchRequestBody = body;
         const content = isConnectionTest
           ? "POSTBELL_CONNECTED"
           : JSON.stringify({ detect: "Mock detect", connect: "Mock connect", decide: "Mock decide", analyst: "Mock analyst", uncertainty: "Mock uncertainty" });
@@ -179,6 +181,8 @@ async function runAllTests() {
       assert(connectionResult.reply === "POSTBELL_CONNECTED", "Provider connection test reaches an OpenAI-compatible endpoint");
       const researchResult = await runPostbellResearch("What moved?", "rNVDA", mockConnection);
       assert(researchResult.steps.detect === "Mock detect" && researchResult.analyst === "Mock analyst", "Live evidence flows through the selected model into the research response");
+      const suppliedEvidence = JSON.stringify(researchRequestBody?.messages || []);
+      assert(/Bitget rNVDA ticker: Price \$\d/.test(suppliedEvidence) && /% versus Bitget/.test(suppliedEvidence), "Primary asset price and reference change are supplied to the selected model");
     } finally {
       await new Promise<void>((resolve, reject) => mockProvider.close((error) => error ? reject(error) : resolve()));
     }

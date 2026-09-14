@@ -381,7 +381,9 @@ export async function runPostbellResearch(question: string, symbol = "rNVDA", ll
   const evidence: PostbellResearchResult["evidence"] = [
     {
       title: `Bitget ${signal.symbol} ticker`,
-      detail: signal.referenceCloseSource ? `${signal.referenceCloseSource} · ${signal.dataMode === "live" ? "live" : "representative"} data` : "Price, volume and premium",
+      detail: signal.referenceCloseSource
+        ? `Price $${signal.price.toFixed(2)}; ${signal.overnightChangePct >= 0 ? "+" : "−"}${Math.abs(signal.overnightChangePct).toFixed(2)}% versus ${signal.referenceCloseSource}; ${signal.volumeMultiple.toFixed(1)}× median volume · ${signal.dataMode === "live" ? "live" : "representative"} data`
+        : `Price $${signal.price.toFixed(2)}; ${signal.overnightChangePct >= 0 ? "+" : "−"}${Math.abs(signal.overnightChangePct).toFixed(2)}%; ${signal.volumeMultiple.toFixed(1)}× median volume`,
       url: `https://api.bitget.com/api/v3/market/tickers?category=SPOT&symbol=${signal.symbol.replace(/^r/i, "r").toUpperCase()}USDT`,
       status: signal.dataMode === "live" ? "live" : "representative"
     },
