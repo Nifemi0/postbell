@@ -1,7 +1,7 @@
 {
-  "name": "nexustrader-mcp",
+  "name": "postbell",
   "version": "1.0.0",
-  "description": "Autonomous Multi-Signal Crypto Trading Copilot & Model Context Protocol (MCP) Server for X-Agent AI MCP Hackathon 2026",
+  "description": "AI Trading Desk for overnight Bitget tokenized-stock market intelligence",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
@@ -10,16 +10,14 @@
     "test": "ts-node src/tests/test_all.ts"
   },
   "keywords": [
-    "mcp",
-    "model-context-protocol",
-    "ai-agent",
-    "crypto-trading",
+    "postbell",
+    "ai-trading-desk",
     "bitget",
-    "hackathon",
-    "olaxbt",
-    "x-agent"
+    "tokenized-stocks",
+    "market-intelligence",
+    "hackathon"
   ],
-  "author": "NexusTrader Team",
+  "author": "Nifemi",
   "license": "MIT",
   "dependencies": {
     "express": "^4.21.2",
