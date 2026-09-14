@@ -88,8 +88,9 @@ async function runResearch(question = $("research-question")?.value.trim()) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 35_000);
   try {
-    const llmSessionId = localStorage.getItem("postbell-llm-session");
-    const response = await fetch("/api/postbell/research", { method: "POST", signal: controller.signal, headers: { "Content-Type": "application/json", ...(llmSessionId ? { "X-Postbell-LLM-Session": llmSessionId } : {}) }, body: JSON.stringify({ question, symbol: state.symbol }) });
+    let llmConnection = null;
+    try { llmConnection = JSON.parse(localStorage.getItem("postbell-llm-connection") || "null"); } catch { localStorage.removeItem("postbell-llm-connection"); }
+    const response = await fetch("/api/postbell/research", { method: "POST", signal: controller.signal, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question, symbol: state.symbol, llmConnection }) });
     const payload = await response.json(); if (!payload.success) throw new Error(payload.error || "AI research is unavailable.");
     renderResearch(payload.research);
   } catch (error) { setText("uncertainty", error?.name === "AbortError" ? "The AI response took too long. Try again." : error?.message || "AI research is unavailable. Connect a model in Model Settings."); }

@@ -1,34 +1,20 @@
-import { randomUUID } from "crypto";
-import fs from "fs";
-import path from "path";
 import type { PostbellResearchResult } from "./postbellData";
+
+export interface LlmConnectionInput {
+  baseUrl?: string;
+  model?: string;
+  apiKey?: string;
+  provider?: string;
+}
 
 interface LlmConnection {
   baseUrl: string;
   model: string;
   apiKey: string;
   provider: string;
-  createdAt: string;
 }
 
-const connections = new Map<string, LlmConnection>();
-const connectionFile = path.join(process.cwd(), "data", "postbell-llm.json");
 let environmentConnection: LlmConnection | undefined;
-
-try {
-  if (fs.existsSync(connectionFile)) {
-    const stored = JSON.parse(fs.readFileSync(connectionFile, "utf8"));
-    Object.entries(stored).forEach(([sessionId, connection]) => connections.set(sessionId, connection as LlmConnection));
-  }
-} catch {
-  // Ignore an unavailable local connection file and use built-in synthesis.
-}
-
-function persistConnections() {
-  fs.mkdirSync(path.dirname(connectionFile), { recursive: true });
-  const stored = Object.fromEntries(connections.entries());
-  fs.writeFileSync(connectionFile, JSON.stringify(stored, null, 2), { encoding: "utf8", mode: 0o600 });
-}
 
 function normalizeBaseUrl(value: string): string {
   const url = new URL(value.trim());
@@ -42,50 +28,39 @@ try {
       baseUrl: normalizeBaseUrl(process.env.POSTBELL_LLM_BASE_URL),
       model: process.env.POSTBELL_LLM_MODEL,
       apiKey: process.env.POSTBELL_LLM_API_KEY || "",
-      provider: process.env.POSTBELL_LLM_PROVIDER || "Environment",
-      createdAt: new Date().toISOString()
+      provider: process.env.POSTBELL_LLM_PROVIDER || "Environment"
     };
   }
 } catch {}
 
-function resolveConnection(sessionId?: string) {
-  if (sessionId && connections.has(sessionId)) return connections.get(sessionId);
-  // Restore the single local workspace connection when a browser loses localStorage.
-  // The credential never leaves this process; only the generated response is returned.
-  return environmentConnection || [...connections.values()][0];
+function resolveConnection(input?: LlmConnectionInput) {
+  if (input && Object.keys(input).length > 0) return createLlmConnection(input);
+  return environmentConnection;
 }
 
 function completionUrl(baseUrl: string): string {
   return baseUrl.endsWith("/chat/completions") ? baseUrl : `${baseUrl}/chat/completions`;
 }
 
-export function createLlmConnection(input: { baseUrl?: string; model?: string; apiKey?: string; provider?: string }) {
+export function createLlmConnection(input: LlmConnectionInput): LlmConnection {
   const baseUrl = normalizeBaseUrl(input.baseUrl || "");
   const model = (input.model || "").trim();
   const apiKey = (input.apiKey || "").trim();
   if (!model) throw new Error("Choose a model.");
   if (!apiKey && !baseUrl.includes("localhost") && !baseUrl.includes("127.0.0.1")) throw new Error("Enter an API key.");
-  const sessionId = randomUUID();
-  connections.set(sessionId, { baseUrl, model, apiKey, provider: (input.provider || "Custom").trim(), createdAt: new Date().toISOString() });
-  persistConnections();
-  return { sessionId, status: getLlmConnectionStatus(sessionId) };
+  return { baseUrl, model, apiKey, provider: (input.provider || "Custom").trim() };
 }
 
-export function getLlmConnectionStatus(sessionId?: string) {
-  const connection = resolveConnection(sessionId);
+export function getLlmConnectionStatus(input?: LlmConnectionInput) {
+  const connection = resolveConnection(input);
   if (!connection) return { configured: false };
   return {
     configured: true,
     provider: connection.provider,
     model: connection.model,
     baseUrl: connection.baseUrl,
-    createdAt: connection.createdAt,
     keyHint: connection.apiKey ? `••••${connection.apiKey.slice(-4)}` : "Local model"
   };
-}
-
-export function removeLlmConnection(sessionId?: string) {
-  if (sessionId) { connections.delete(sessionId); persistConnections(); }
 }
 
 async function callConnection(connection: LlmConnection, messages: Array<{ role: "system" | "user"; content: string }>, maxTokens = 420) {
@@ -118,8 +93,8 @@ async function callConnection(connection: LlmConnection, messages: Array<{ role:
   }
 }
 
-export async function testLlmConnection(sessionId?: string) {
-  const connection = resolveConnection(sessionId);
+export async function testLlmConnection(input?: LlmConnectionInput) {
+  const connection = resolveConnection(input);
   if (!connection) throw new Error("Model connection not found.");
   const reply = await callConnection(connection, [{ role: "user", content: "Reply with exactly: POSTBELL_CONNECTED" }], 20);
   return { ok: true, reply, model: connection.model };
@@ -130,8 +105,8 @@ function parseJsonReply(content: string): any {
   return JSON.parse(cleaned);
 }
 
-export async function enhanceResearchWithLlm(sessionId: string | undefined, result: PostbellResearchResult): Promise<PostbellResearchResult> {
-  const connection = resolveConnection(sessionId);
+export async function enhanceResearchWithLlm(input: LlmConnectionInput | undefined, result: PostbellResearchResult): Promise<PostbellResearchResult> {
+  const connection = resolveConnection(input);
   if (!connection) throw new Error("No AI model is connected. Open Model Settings and connect a provider before running research.");
   const evidence = result.evidence.map((item, index) => `${index + 1}. [${item.status}] ${item.title}: ${item.detail}`).join("\n");
   try {

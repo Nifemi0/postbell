@@ -1,6 +1,13 @@
 const brandMark = "assets/postbell/postbell-mark.svg"; if (!document.querySelector('link[rel="icon"]')) { const icon=document.createElement("link"); icon.rel="icon"; icon.type="image/svg+xml"; icon.href=brandMark; document.head.appendChild(icon); } document.querySelectorAll(".brand-orbit").forEach((node)=>{node.style.background=`url(${brandMark}) center / contain no-repeat`;node.style.border="0";});
-const sessionKey = "postbell-llm-session";
-const getSession = () => localStorage.getItem(sessionKey);
+const connectionKey = "postbell-llm-connection";
+const getConnection = () => {
+  try {
+    return JSON.parse(localStorage.getItem(connectionKey) || "null");
+  } catch {
+    localStorage.removeItem(connectionKey);
+    return null;
+  }
+};
 const el = (id) => document.getElementById(id);
 const presets = {
   Qwen: { baseUrl: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1", model: "qwen-plus" },
@@ -11,11 +18,6 @@ const presets = {
   Custom: { baseUrl: "", model: "" }
 };
 
-function headers() {
-  const session = getSession();
-  return session ? { "X-Postbell-LLM-Session": session } : {};
-}
-
 function message(text, type = "") {
   el("model-message").hidden = !text;
   el("model-message").textContent = text;
@@ -25,11 +27,11 @@ function message(text, type = "") {
 function renderStatus(status) {
   const panel = document.querySelector(".model-status");
   panel.classList.toggle("connected", Boolean(status.configured));
-  el("engine-name").textContent = status.configured ? status.model : "Built-in research";
-  el("engine-copy").textContent = status.configured ? "Your model will help explain the evidence in new research runs." : "You can explore Postbell now. Connecting a model adds AI-written analysis to your market evidence.";
+  el("engine-name").textContent = status.configured ? status.model : "Live evidence only";
+  el("engine-copy").textContent = status.configured ? "Your model will help explain the evidence in new research runs." : "Bitget evidence is available now. Connect a model to generate AI-written research.";
   el("disconnect-model").hidden = !status.configured;
-  el("status-provider").textContent = status.configured ? status.provider : "Built in";
-  el("status-model").textContent = status.configured ? status.model : "Postbell rules";
+  el("status-provider").textContent = status.configured ? status.provider : "Not connected";
+  el("status-model").textContent = status.configured ? status.model : "—";
   el("status-key").textContent = status.configured ? status.keyHint : "Not required";
   const keyInput = el("api-key");
   if (keyInput && status.configured) {
@@ -42,11 +44,15 @@ function renderStatus(status) {
 }
 
 async function loadStatus() {
-  try {
-  const response = await fetch("/api/postbell/llm", { headers: headers() });
-  const payload = await response.json();
-  if (payload.success) renderStatus(payload.status);
-  } catch { message("We couldn’t check your connection. Please try again.", "error"); }
+  const connection = getConnection();
+  if (!connection) return renderStatus({ configured: false });
+  renderStatus({
+    configured: true,
+    provider: connection.provider,
+    model: connection.model,
+    baseUrl: connection.baseUrl,
+    keyHint: connection.apiKey ? `••••${connection.apiKey.slice(-4)}` : "Local model"
+  });
 }
 
 el("provider").addEventListener("change", (event) => {
@@ -74,23 +80,24 @@ el("model-form").addEventListener("submit", async (event) => {
   button.textContent = "Checking connection…";
   message("Contacting your model. This may take a few seconds.");
   const body = Object.fromEntries(new FormData(event.currentTarget).entries());
-  const previousSession = getSession();
-  let candidateSession;
   try {
-    const response = await fetch("/api/postbell/llm", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    const payload = await response.json();
-    if (!payload.success) throw new Error(payload.error);
-    candidateSession = payload.sessionId;
-    const testResponse = await fetch("/api/postbell/llm/test", { method: "POST", headers: { "X-Postbell-LLM-Session": candidateSession } });
+    const testResponse = await fetch("/api/postbell/llm/test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
     const test = await testResponse.json();
     if (!test.success) throw new Error(test.error || "The connection check failed.");
-    localStorage.setItem(sessionKey, payload.sessionId);
-    renderStatus(payload.status);
+    localStorage.setItem(connectionKey, JSON.stringify(body));
+    renderStatus({
+      configured: true,
+      provider: body.provider,
+      model: body.model,
+      baseUrl: body.baseUrl,
+      keyHint: body.apiKey ? `••••${body.apiKey.slice(-4)}` : "Local model"
+    });
     message("Connection checked. Your model is ready for the next brief.", "success");
-    if (previousSession) await fetch("/api/postbell/llm", { method: "DELETE", headers: { "X-Postbell-LLM-Session": previousSession } }).catch(() => {});
-    candidateSession = null;
   } catch (error) {
-    if (candidateSession) await fetch("/api/postbell/llm", { method: "DELETE", headers: { "X-Postbell-LLM-Session": candidateSession } }).catch(() => {});
     const detail = error.message === "fetch failed" ? "We couldn’t reach your model. Check the endpoint and make sure the service is running." : error.message;
     message(detail || "Could not connect the model. Please try again.", "error");
   } finally {
@@ -102,10 +109,11 @@ el("model-form").addEventListener("submit", async (event) => {
 
 /* Standalone test is optional; the main action connects and tests together. */
 el("test-model")?.addEventListener("click", async () => {
-  if (!getSession()) return message("Connect a model first.", "error");
+  const connection = getConnection();
+  if (!connection) return message("Connect a model first.", "error");
   message("Testing the model endpoint…");
   try {
-    const response = await fetch("/api/postbell/llm/test", { method: "POST", headers: headers() });
+    const response = await fetch("/api/postbell/llm/test", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(connection) });
     const payload = await response.json();
     if (!payload.success) throw new Error(payload.error);
     message(`Connection passed · ${payload.result.model}`, "success");
@@ -116,11 +124,9 @@ el("test-model")?.addEventListener("click", async () => {
 
 el("disconnect-model").addEventListener("click", async () => {
   try {
-  const response = await fetch("/api/postbell/llm", { method: "DELETE", headers: headers() });
-  if (!response.ok) throw new Error("Could not disconnect. Please try again.");
-  localStorage.removeItem(sessionKey);
+  localStorage.removeItem(connectionKey);
   renderStatus({ configured: false });
-  message("Model disconnected. Built-in synthesis is active.");
+  message("Model disconnected. Connect a provider to run new AI research.");
   } catch(error) { message(error.message, "error"); }
 });
 

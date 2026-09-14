@@ -50,7 +50,7 @@
         <div class="field">
           <label for="api-key">API key</label>
           <div class="secret-input"><input id="api-key" name="apiKey" type="password" placeholder="Paste your provider key" autocomplete="off" required><button type="button" id="reveal-key">Show</button></div>
-          <small>Your key is stored locally for this workspace, never shown in the browser, and never included in research output.</small>
+          <small>Your key stays in this browser. It passes through Postbell only when contacting your provider and is never written to Postbell storage or included in research output.</small>
         </div>
         <details id="advanced-settings"><summary>Advanced settings</summary><div class="field"><label for="base-url">Base URL</label><input id="base-url" name="baseUrl" type="url" value="https://dashscope-intl.aliyuncs.com/compatible-mode/v1" required><small>Change this for a different region or your own endpoint.</small></div></details>
         <p class="form-message" id="model-message" role="status" hidden></p>
@@ -60,11 +60,11 @@
 
       <aside class="model-status">
         <p class="panel-label"><span class="connection-dot"></span>Current connection</p>
-        <h2 id="engine-name">Built-in research</h2>
-        <p id="engine-copy">You can explore Postbell now. Connecting a model adds AI-written analysis to your market evidence.</p>
+        <h2 id="engine-name">Live evidence only</h2>
+        <p id="engine-copy">Bitget evidence is available now. Connect a model to generate AI-written research.</p>
         <dl>
-          <div><dt>Provider</dt><dd id="status-provider">Built in</dd></div>
-          <div><dt>Model</dt><dd id="status-model">Postbell rules</dd></div>
+          <div><dt>Provider</dt><dd id="status-provider">Not connected</dd></div>
+          <div><dt>Model</dt><dd id="status-model">—</dd></div>
           <div><dt>Credential</dt><dd id="status-key">Not required</dd></div>
         </dl>
         <a href="postbell-app.html">Open Morning Brief ↗</a>
@@ -74,10 +74,10 @@
     <section class="connection-notes" aria-label="About your connection">
       <article><span>Evidence stays in control</span><p>The model receives the current Bitget observation and Postbell’s source trail. It is instructed to preserve uncertainty and avoid inventing catalysts.</p></article>
       <article><span>Works with local models</span><p>Ollama and other OpenAI-compatible local servers can connect without an API key when they run on localhost.</p></article>
-      <article><span>One browser, one connection</span><p>A random connection ID isolates your credential from other browsers. Only that ID is stored locally.</p></article>
+      <article><span>One browser, one connection</span><p>Your connection profile stays in this browser and is sent only with the provider requests you start.</p></article>
     </section>
   </main>
-  <footer class="app-footer"><a href="postbell.html">Postbell home</a><span>Your API key is never included in research output</span></footer>
+  <footer class="app-footer"><a href="postbell.html">Postbell home</a><span>Your API key stays in this browser and is never included in research output</span></footer>
   <script src="postbell-settings.js"></script>
 </body>
 </html>

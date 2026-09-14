@@ -22,4 +22,4 @@ Never commit `.env` files or the `data/` directory. The data directory contains 
 
 ## Vercel note
 
-The current app is an Express server with a local JSON runtime store. A Vercel deployment can serve the UI and read-only routes, but persistent multi-user connections require a database and encrypted secret storage. For the hackathon demo, use a public read-only deployment with provider credentials configured as Vercel environment variables, or keep AI provider keys in the local Model Settings flow.
+The current app is an Express server deployed through a Vercel function. Model connection profiles stay in each user's browser and are sent only with the provider requests that user starts. Postbell does not write provider credentials to its filesystem or database. A server-managed shared provider can still be configured through Vercel environment variables when required.

@@ -8,5 +8,5 @@
 - [x] Include desktop and mobile screenshots.
 - [x] Record a demo video under three minutes if the demo requires login.
 - [x] Publish a qualifying X post tagging `@Bitget_AI` and `#BitgetHackathon`: https://x.com/Love_Light_11/status/2099267855581589715
-- [ ] Exclude `data/`, `.env`, API keys, and personal runtime state.
+- [x] Exclude `data/`, `.env`, API keys, and personal runtime state.
 - [ ] Submit through the official Bitget form before September 21, 2026 (UTC+8).

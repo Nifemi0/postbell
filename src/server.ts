@@ -9,7 +9,7 @@ import { calculateRiskPosition, executeSimulatedOrder } from "./engine/riskManag
 import { handleMcpToolCall, MCP_TOOLS } from "./mcp/tools";
 import { processAgentQuery } from "./engine/agentBrain";
 import { calculateOvernightMetrics, getPostbellBrief, getPostbellMarketQuote, getPostbellSignal, runPostbellResearch } from "./engine/postbellData";
-import { createLlmConnection, getLlmConnectionStatus, removeLlmConnection, testLlmConnection } from "./engine/llmProvider";
+import { createLlmConnection, getLlmConnectionStatus, testLlmConnection, type LlmConnectionInput } from "./engine/llmProvider";
 
 import fs from "fs";
 
@@ -242,23 +242,22 @@ app.post("/api/postbell/research", async (req: Request, res: Response) => {
   try {
     const question = typeof req.body?.question === "string" ? req.body.question : "";
     const symbol = typeof req.body?.symbol === "string" ? req.body.symbol : "rNVDA";
-    const llmSessionId = typeof req.headers["x-postbell-llm-session"] === "string" ? req.headers["x-postbell-llm-session"] : undefined;
-    const research = await runPostbellResearch(question, symbol, llmSessionId);
+    const llmConnection = req.body?.llmConnection as LlmConnectionInput | undefined;
+    const research = await runPostbellResearch(question, symbol, llmConnection);
     res.json({ success: true, research });
   } catch (err: any) {
     res.status(503).json({ success: false, error: err.message || "AI research is unavailable." });
   }
 });
 
-app.get("/api/postbell/llm", (req: Request, res: Response) => {
-  const sessionId = typeof req.headers["x-postbell-llm-session"] === "string" ? req.headers["x-postbell-llm-session"] : undefined;
-  res.json({ success: true, status: getLlmConnectionStatus(sessionId) });
+app.get("/api/postbell/llm", (_req: Request, res: Response) => {
+  res.json({ success: true, status: getLlmConnectionStatus() });
 });
 
 app.post("/api/postbell/llm", (req: Request, res: Response) => {
   try {
     const connection = createLlmConnection(req.body || {});
-    res.json({ success: true, ...connection });
+    res.json({ success: true, status: getLlmConnectionStatus(connection) });
   } catch (err: any) {
     res.status(400).json({ success: false, error: err.message });
   }
@@ -266,17 +265,14 @@ app.post("/api/postbell/llm", (req: Request, res: Response) => {
 
 app.post("/api/postbell/llm/test", async (req: Request, res: Response) => {
   try {
-    const sessionId = typeof req.headers["x-postbell-llm-session"] === "string" ? req.headers["x-postbell-llm-session"] : undefined;
-    const result = await testLlmConnection(sessionId);
+    const result = await testLlmConnection(req.body || undefined);
     res.json({ success: true, result });
   } catch (err: any) {
     res.status(400).json({ success: false, error: err.message });
   }
 });
 
-app.delete("/api/postbell/llm", (req: Request, res: Response) => {
-  const sessionId = typeof req.headers["x-postbell-llm-session"] === "string" ? req.headers["x-postbell-llm-session"] : undefined;
-  removeLlmConnection(sessionId);
+app.delete("/api/postbell/llm", (_req: Request, res: Response) => {
   res.json({ success: true });
 });
 

@@ -1,5 +1,5 @@
 export type PostbellDataMode = "representative" | "live";
-import { enhanceResearchWithLlm } from "./llmProvider";
+import { enhanceResearchWithLlm, type LlmConnectionInput } from "./llmProvider";
 
 export interface PostbellEvent {
   id: string;
@@ -370,7 +370,7 @@ async function fetchPrimarySource(symbol: string): Promise<PostbellResearchResul
   }
 }
 
-export async function runPostbellResearch(question: string, symbol = "rNVDA", llmSessionId?: string): Promise<PostbellResearchResult> {
+export async function runPostbellResearch(question: string, symbol = "rNVDA", llmConnection?: LlmConnectionInput): Promise<PostbellResearchResult> {
   const cleanQuestion = question.trim() || "What moved in the overnight rToken tape, what evidence explains it, and what should I watch at the open?";
   const brief = await getPostbellBrief();
   const signal = brief.signals.find((item) => item.symbol.toUpperCase() === symbol.toUpperCase()) ?? brief.signals[0];
@@ -415,5 +415,5 @@ export async function runPostbellResearch(question: string, symbol = "rNVDA", ll
     uncertainty: liveEvidence ? "Prices and peer moves are live from Bitget. Postbell does not currently ingest a general news feed, so the catalyst remains unconfirmed unless SEC evidence is found." : "This run uses representative market data and has no confirmed primary-source catalyst.",
     analyst: `Postbell compared ${signal.symbol} with ${peers.map((item) => item.symbol).join(" and ")} and kept the catalyst separate from the price signal.`
   };
-  return enhanceResearchWithLlm(llmSessionId, deterministic);
+  return enhanceResearchWithLlm(llmConnection, deterministic);
 }

@@ -53,7 +53,7 @@ The AI Trading Desk track is judged subjectively on feature depth, data/skill in
 
 **Validation and metrics:** The current validation is an end-to-end working demo using live Bitget ticker and 1-hour candle endpoints for rNVDA, rTSLA, and rQQQ, with timestamped research output and a complete question-to-insight flow. Observed product proof is the runnable public demo and 58-second walkthrough. User-scale metrics are not yet claimed; the next validation step is measuring task completion time, repeat research sessions, and the percentage of briefs where users can identify the catalyst, evidence status, and invalidation condition.
 
-**Progress:** The public landing page, Morning Brief, Night Tape, Saved Research, and Settings flows are implemented. DeepSeek is connected through a local provider key; Bitget market data is read-only; fixture data is explicitly labeled when public endpoints are unavailable. The product does not execute trades.
+**Progress:** The public landing page, Morning Brief, Night Tape, Saved Research, and Settings flows are implemented. Users can connect DeepSeek or another supported provider with a browser-owned key; Bitget market data is read-only; fixture data is explicitly labeled when public endpoints are unavailable. The product does not execute trades.
 
 **Deliverables:** Public demo, GitHub repository, source code, README, submission checklist, screenshots, and the public walkthrough video are listed above.
 
@@ -77,7 +77,7 @@ The AI Trading Desk track is judged subjectively on feature depth, data/skill in
 - [ ] Capture a short demo video, maximum three minutes, covering the full research flow.
 - [ ] Include a usage record or API log with timestamps showing the brief and AI response running.
 - [x] Publish a qualifying X post that tags `@Bitget_AI` and `#BitgetHackathon`: https://x.com/Love_Light_11/status/2099267855581589715
-- [ ] Keep the local `data/` folder, API keys, `.env` files, and personal runtime state out of the public repository.
+- [x] Keep the local `data/` folder, API keys, `.env` files, and personal runtime state out of the public repository.
 
 ### Final form pass
 

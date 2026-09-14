@@ -1,9 +1,11 @@
+import http from "http";
 import { getLiveCandles, getLiveTelemetry, getAllMarketTickers } from "../engine/marketData";
 import { computeTechnicalSignals, calculateRSI, calculateEMA } from "../engine/indicators";
 import { runBacktest } from "../engine/backtester";
 import { calculateRiskPosition, executeSimulatedOrder } from "../engine/riskManager";
 import { handleMcpToolCall, MCP_TOOLS } from "../mcp/tools";
-import { calculateOvernightMetrics, getPostbellBrief, getPostbellMarketQuote, getPostbellSignal } from "../engine/postbellData";
+import { calculateOvernightMetrics, getPostbellBrief, getPostbellMarketQuote, getPostbellSignal, runPostbellResearch } from "../engine/postbellData";
+import { createLlmConnection, getLlmConnectionStatus, testLlmConnection } from "../engine/llmProvider";
 
 async function runAllTests() {
   console.log("==================================================");
@@ -133,6 +135,55 @@ async function runAllTests() {
     assert(nvda.scenarios.length === 3 && nvda.scenarios.every((scenario) => scenario.hypothetical), "Bull, base, and bear scenarios are explicitly hypothetical");
   } catch (err: any) {
     assert(false, `Postbell Data Error: ${err.message}`);
+  }
+
+  // 7. Browser-owned model connection validation
+  console.log("\n[TEST GROUP 7] Postbell Model Connection Safety...");
+  try {
+    const connection = createLlmConnection({
+      provider: "DeepSeek",
+      model: "deepseek-v4-pro",
+      baseUrl: "https://api.deepseek.com/",
+      apiKey: "verification-key-1234"
+    });
+    const status = getLlmConnectionStatus(connection);
+    assert(status.configured === true && status.baseUrl === "https://api.deepseek.com", "Model configuration validates without filesystem persistence");
+    assert(status.keyHint === "••••1234" && !(status as any).apiKey, "Connection status exposes only a masked key hint");
+    let rejected = false;
+    try {
+      createLlmConnection({ provider: "DeepSeek", model: "deepseek-v4-pro", baseUrl: "https://api.deepseek.com" });
+    } catch {
+      rejected = true;
+    }
+    assert(rejected, "Remote providers require an API key");
+
+    const mockProvider = http.createServer((request, response) => {
+      let raw = "";
+      request.on("data", (chunk) => { raw += chunk; });
+      request.on("end", () => {
+        const body = JSON.parse(raw || "{}");
+        const isConnectionTest = body.messages?.length === 1;
+        const content = isConnectionTest
+          ? "POSTBELL_CONNECTED"
+          : JSON.stringify({ detect: "Mock detect", connect: "Mock connect", decide: "Mock decide", analyst: "Mock analyst", uncertainty: "Mock uncertainty" });
+        response.writeHead(200, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ choices: [{ message: { content } }] }));
+      });
+    });
+    await new Promise<void>((resolve) => mockProvider.listen(0, "127.0.0.1", resolve));
+    try {
+      const address = mockProvider.address();
+      if (!address || typeof address === "string") throw new Error("Mock provider did not expose a port.");
+      const mockConnection = { provider: "Local test", model: "postbell-test", baseUrl: `http://127.0.0.1:${address.port}/v1`, apiKey: "" };
+      const connectionResult = await testLlmConnection(mockConnection);
+      assert(connectionResult.reply === "POSTBELL_CONNECTED", "Provider connection test reaches an OpenAI-compatible endpoint");
+      const researchResult = await runPostbellResearch("What moved?", "rNVDA", mockConnection);
+      assert(researchResult.steps.detect === "Mock detect" && researchResult.analyst === "Mock analyst", "Live evidence flows through the selected model into the research response");
+    } finally {
+      await new Promise<void>((resolve, reject) => mockProvider.close((error) => error ? reject(error) : resolve()));
+    }
+  } catch (err: any) {
+    assert(false, `Model Connection Error: ${err.message}`);
   }
 
   console.log("\n==================================================");

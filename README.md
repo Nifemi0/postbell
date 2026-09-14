@@ -27,7 +27,7 @@ The live adapter reads Bitget's public ticker and one-hour candlestick endpoints
 
 When a model is connected, Postbell sends normalized market observations and evidence statuses to the provider. The model writes the explanation and scenarios; it does not invent ticker values or place orders. If the model is not connected or a request fails, the UI reports the failure instead of presenting a deterministic response as AI output.
 
-API keys are stored locally in the browser workspace and are not committed to the repository. No trading credentials or order execution are required.
+API keys are stored in the user's browser and are not committed to the repository or persisted by Postbell's server. The selected key is sent through the Postbell API only for the provider request the user starts. No trading credentials or order execution are required.
 
 ## Run locally
 
