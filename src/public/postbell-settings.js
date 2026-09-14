@@ -97,6 +97,7 @@ el("model-form").addEventListener("submit", async (event) => {
       keyHint: body.apiKey ? `••••${body.apiKey.slice(-4)}` : "Local model"
     });
     message("Connection checked. Your model is ready for the next brief.", "success");
+    window.PostbellAnalytics?.track("model_connected", { provider: String(body.provider || "Other"), status: "complete" });
   } catch (error) {
     const detail = error.message === "fetch failed" ? "We couldn’t reach your model. Check the endpoint and make sure the service is running." : error.message;
     message(detail || "Could not connect the model. Please try again.", "error");

@@ -6,6 +6,7 @@ import { calculateRiskPosition, executeSimulatedOrder } from "../engine/riskMana
 import { handleMcpToolCall, MCP_TOOLS } from "../mcp/tools";
 import { calculateOvernightMetrics, getPostbellBrief, getPostbellMarketQuote, getPostbellSignal, runPostbellResearch } from "../engine/postbellData";
 import { createLlmConnection, getLlmConnectionStatus, testLlmConnection } from "../engine/llmProvider";
+import { normalizeAnalyticsEvent } from "../engine/analytics";
 
 async function runAllTests() {
   console.log("==================================================");
@@ -188,6 +189,33 @@ async function runAllTests() {
     }
   } catch (err: any) {
     assert(false, `Model Connection Error: ${err.message}`);
+  }
+
+  // 8. Anonymous product analytics validation
+  console.log("\n[TEST GROUP 8] Postbell Admin Analytics Privacy...");
+  try {
+    const event = normalizeAnalyticsEvent({
+      event: "research_success",
+      visitorId: "visitor-12345678",
+      sessionId: "session-12345678",
+      path: "/postbell-app.html?<script>alert(1)</script>",
+      provider: "DeepSeek<script>",
+      durationMs: 999999,
+      prompt: "This field must never be retained",
+      apiKey: "secret-key-must-never-be-retained"
+    });
+    assert(event.event === "research_success" && event.provider === "DeepSeekscript", "Analytics accepts only known, sanitized product fields");
+    assert(!("prompt" in event) && !("apiKey" in event), "Analytics discards prompts and credentials");
+    assert(event.durationMs === 120_000, "Analytics bounds client-supplied timing values");
+    let rejected = false;
+    try {
+      normalizeAnalyticsEvent({ event: "unknown", visitorId: "visitor-12345678", sessionId: "session-12345678" });
+    } catch {
+      rejected = true;
+    }
+    assert(rejected, "Analytics rejects unknown event types");
+  } catch (err: any) {
+    assert(false, `Analytics Privacy Error: ${err.message}`);
   }
 
   console.log("\n==================================================");

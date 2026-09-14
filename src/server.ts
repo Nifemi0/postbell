@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import http from "http";
 import path from "path";
+import crypto from "crypto";
 import { WebSocket, WebSocketServer } from "ws";
 import { getAllMarketTickers, getLiveCandles, getLiveTelemetry } from "./engine/marketData";
 import { computeTechnicalSignals } from "./engine/indicators";
@@ -10,6 +11,7 @@ import { handleMcpToolCall, MCP_TOOLS } from "./mcp/tools";
 import { processAgentQuery } from "./engine/agentBrain";
 import { calculateOvernightMetrics, getPostbellBrief, getPostbellMarketQuote, getPostbellSignal, runPostbellResearch } from "./engine/postbellData";
 import { createLlmConnection, getLlmConnectionStatus, testLlmConnection, type LlmConnectionInput } from "./engine/llmProvider";
+import { getAnalyticsSnapshot, recordAnalyticsEvent } from "./engine/analytics";
 
 import fs from "fs";
 
@@ -84,9 +86,39 @@ const publicDir = fs.existsSync(path.join(__dirname, "public"))
   ? path.join(__dirname, "public")
   : path.join(__dirname, "../src/public");
 
-app.use(express.json());
+app.use(express.json({ limit: "24kb" }));
 app.get("/", (_req: Request, res: Response) => res.sendFile(path.join(publicDir, "postbell.html")));
 app.use(express.static(publicDir));
+
+function hasAdminAccess(req: Request): boolean {
+  const expected = process.env.POSTBELL_ADMIN_KEY || "";
+  const supplied = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
+  if (!expected || !supplied) return false;
+  const expectedBytes = Buffer.from(expected);
+  const suppliedBytes = Buffer.from(supplied);
+  return expectedBytes.length === suppliedBytes.length && crypto.timingSafeEqual(expectedBytes, suppliedBytes);
+}
+
+app.post("/api/postbell/analytics/event", async (req: Request, res: Response) => {
+  try {
+    await recordAnalyticsEvent(req.body);
+    res.status(202).json({ success: true });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error?.message || "Invalid analytics event." });
+  }
+});
+
+app.get("/api/postbell/admin/metrics", async (req: Request, res: Response) => {
+  if (!process.env.POSTBELL_ADMIN_KEY) return res.status(503).json({ success: false, error: "Admin access is not configured." });
+  if (!hasAdminAccess(req)) return res.status(401).json({ success: false, error: "Invalid admin access key." });
+  try {
+    const metrics = await getAnalyticsSnapshot();
+    res.json({ success: true, metrics });
+  } catch (error: any) {
+    console.error(JSON.stringify({ level: "error", message: "admin_metrics_failed", error: error?.message || "Unknown error" }));
+    res.status(500).json({ success: false, error: "Analytics are temporarily unavailable." });
+  }
+});
 
 // Broadcast helper for WebSockets
 function broadcast(type: string, data: any) {

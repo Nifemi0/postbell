@@ -84,6 +84,8 @@ async function loadBrief() {
 
 async function runResearch(question = $("research-question")?.value.trim()) {
   if (!question) return;
+  const researchStartedAt = Date.now();
+  let analyticsProvider = "Not connected";
   const submit = $("research-submit"); if (submit) { submit.disabled = true; submit.textContent = "Researching…"; }
   setText("question-readout", question); setText("data-mode", "reading evidence");
   const controller = new AbortController();
@@ -91,10 +93,15 @@ async function runResearch(question = $("research-question")?.value.trim()) {
   try {
     let llmConnection = null;
     try { llmConnection = JSON.parse(localStorage.getItem("postbell-llm-connection") || "null"); } catch { localStorage.removeItem("postbell-llm-connection"); }
+    analyticsProvider = llmConnection?.provider || "Not connected";
     const response = await fetch("/api/postbell/research", { method: "POST", signal: controller.signal, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question, symbol: state.symbol, llmConnection }) });
     const payload = await response.json(); if (!payload.success) throw new Error(payload.error || "AI research is unavailable.");
     renderResearch(payload.research);
-  } catch (error) { setText("uncertainty", error?.name === "AbortError" ? "The AI response took too long. Try again." : error?.message || "AI research is unavailable. Connect a model in Model Settings."); }
+    window.PostbellAnalytics?.track("research_success", { provider: analyticsProvider, durationMs: Date.now() - researchStartedAt, status: "complete" });
+  } catch (error) {
+    setText("uncertainty", error?.name === "AbortError" ? "The AI response took too long. Try again." : error?.message || "AI research is unavailable. Connect a model in Model Settings.");
+    window.PostbellAnalytics?.track("research_error", { provider: analyticsProvider, durationMs: Date.now() - researchStartedAt, status: error?.name === "AbortError" ? "timeout" : "failed" });
+  }
   finally { clearTimeout(timeout); if (submit) { submit.disabled = false; submit.innerHTML = "Run research <span>↗</span>"; } }
 }
 
@@ -135,7 +142,7 @@ async function updateWatch(action) {
   try {
     const response = await fetch(`/api/postbell/watch/${action}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ watch: state.watch }) });
     const payload = await response.json();
-    if (payload.success) { localStorage.setItem(watchKey, JSON.stringify(payload.watch)); renderWatch(payload.watch); await loadBrief(); }
+    if (payload.success) { localStorage.setItem(watchKey, JSON.stringify(payload.watch)); renderWatch(payload.watch); if (action === "start") window.PostbellAnalytics?.track("watch_started"); await loadBrief(); }
   } finally {
     if (button) button.disabled = false;
   }

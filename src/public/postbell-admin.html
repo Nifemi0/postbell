@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Admin — Postbell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="postbell-admin.css">
+</head>
+<body>
+  <section class="admin-login" id="admin-login">
+    <form id="admin-login-form">
+      <img src="assets/postbell/postbell-mark.svg" alt="">
+      <p class="eyebrow">Private operations</p>
+      <h1>Postbell Admin</h1>
+      <p>Enter the private access key to view anonymous product activity.</p>
+      <label for="admin-key">Admin access key</label>
+      <input id="admin-key" type="password" autocomplete="current-password" required>
+      <button type="submit">Open dashboard</button>
+      <small id="login-message" role="status"></small>
+    </form>
+  </section>
+
+  <div class="admin-shell" id="admin-shell" hidden>
+    <header class="admin-header">
+      <a href="postbell.html" class="admin-brand"><img src="assets/postbell/postbell-mark.svg" alt="">POSTBELL</a>
+      <div><span class="live-dot"></span><span id="storage-status">Analytics connected</span><button id="refresh" type="button">Refresh</button><button id="logout" type="button">Lock</button></div>
+    </header>
+
+    <main>
+      <section class="admin-intro">
+        <div><p class="eyebrow">Product operations</p><h1>Usage at a glance.</h1></div>
+        <p>Anonymous traffic and product activity. Research questions, API keys, and personal data are never collected.</p>
+      </section>
+
+      <section class="metric-grid" aria-label="Today’s metrics">
+        <article><span>Visitors today</span><strong id="visitors">0</strong><small id="sessions">0 browser sessions</small></article>
+        <article><span>Active now</span><strong id="active">0</strong><small>Seen in the last 15 minutes</small></article>
+        <article><span>Research runs</span><strong id="research-runs">0</strong><small id="success-rate">No completed runs yet</small></article>
+        <article><span>Average response</span><strong id="average-response">—</strong><small>Successful and failed AI runs</small></article>
+      </section>
+
+      <section class="activity-panel">
+        <header><div><p class="eyebrow">Last seven days</p><h2>Traffic and research activity</h2></div><span id="last-updated">Updating…</span></header>
+        <div class="chart" id="activity-chart" aria-label="Seven-day activity chart"></div>
+        <div class="chart-legend"><span><i class="views"></i>Page views</span><span><i class="research"></i>Research runs</span></div>
+      </section>
+
+      <section class="detail-grid">
+        <article class="table-panel"><header><p class="eyebrow">Traffic</p><h2>Top pages today</h2></header><div id="routes" class="data-list"></div></article>
+        <article class="table-panel"><header><p class="eyebrow">AI usage</p><h2>Provider activity</h2></header><div id="providers" class="data-list"></div></article>
+      </section>
+
+      <section class="recent-panel">
+        <header><div><p class="eyebrow">Live feed</p><h2>Recent anonymous activity</h2></div><span>No prompts or credentials recorded</span></header>
+        <div id="recent" class="recent-list"></div>
+      </section>
+    </main>
+  </div>
+  <script src="postbell-admin.js"></script>
+</body>
+</html>
