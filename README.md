@@ -1,5 +1,11 @@
 # Postbell
 
+<!-- nuvixes-project-credit -->
+Built by [Nifemi](https://github.com/Nifemi0), founder of [Nuvixes](https://nuvixes.studio/).
+[Read the Postbell build story at Nuvixes](https://nuvixes.studio/projects/postbell) for the design decisions, development milestones, and current project status.
+<!-- /nuvixes-project-credit -->
+
+
 Postbell is an AI Trading Desk for overnight Bitget tokenized-stock markets. It turns live rToken movement, peer context, event timelines, and source checks into a decision-ready morning brief.
 
 It is designed for the first few minutes of a trading day: what moved, what may explain it, what is confirmed, and what would invalidate the read. Postbell presents research and scenarios; it does not place trades.
